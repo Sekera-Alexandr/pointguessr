@@ -1,27 +1,36 @@
 <template>
+  <!-- Hlavní div obsahující header a obsah -->
   <div class="main">
+    <!-- Checkbox pro přepínání mezi registrací a přihlášením -->
     <input type="checkbox" id="chk" aria-hidden="true">
+    <!-- Sekce pro registraci -->
     <div class="signup">
       <form>
-        <!-- <img for="chk" src="	https://arion.cz/wp-content/uploads/2021/03/ARION_LOGO_360.png" alt="arionLogo"
-          class="image-container"> -->
+        <!-- Název formuláře pro registraci -->
         <label for="chk">Sign up</label>
+        <!-- Políčka pro zadání uživatelského jména, emailu a hesla -->
         <input type="text" v-model="username" name="username" placeholder="User name" required>
         <input type="email" v-model="email" name="email" placeholder="Email" required>
         <input type="password" v-model="password" name="password" placeholder="Heslo" required>
+        <!-- Tlačítko pro registraci uživatele -->
         <button type="button" @click="vytvoritUzivatele">Sign up</button>
       </form>
     </div>
 
+    <!-- Sekce pro přihlášení -->
     <div class="login">
       <form>
+        <!-- Název formuláře pro přihlášení -->
         <label for="chk" aria-hidden="true">Login</label>
+        <!-- Políčka pro zadání uživatelského jména a hesla -->
         <input type="text" v-model="username" name="username" placeholder="User name" required>
         <input type="password" v-model="password" name="password" placeholder="Heslo" required>
+        <!-- Tlačítko pro přihlášení uživatele -->
         <button type="button" @click="prihlasitUzivatele">Login</button>
       </form>
     </div>
   </div>
+  <!-- Overlay pro uzamknutí aplikace -->
   <div v-if="isLoading" class="overlay"></div>
 </template>
 
@@ -44,29 +53,40 @@ export default {
     }
   },
   methods: {
+
+    // Metoda pro přihlášení uživatele
     logIntoAccount(user) {
       this.isLogged = true
+      // Emitování události 'logged' s příznakem přihlášení
       this.$emit('logged', this.isLogged)
+      // Emitování události 'user' s uživatelskými údaji
       this.$emit('user', user)
     },
+
+    // Metoda pro vytvoření uživatele
     async vytvoritUzivatele() {
       if (this.isLoggingIn) return;
       this.isLoggingIn = true;
       this.isLoading = true;
 
+      // Vytvoření uživatelských dat z formuláře
       const userData = new Users(this.username, this.email, this.password, 0);
       try {
+        // Odeslání POST požadavku na server pro vytvoření uživatele
         const response = await axios.post(this.api + '/Users', userData);
+        // Nastavení uživatelských dat podle odpovědi serveru
         this.username = response.data.username;
         this.email = response.data.email;
         this.password = this.email = response.data.password;
         this.id = response.data.id;
         this.isLoggingIn = false;
 
-        if(!this.email) {
+        // Zpracování odpovědi serveru pro případ, že uživatel s daným jménem nebo emailem již existuje
+        if (!this.email) {
           confirm("Uživatel s tímto jménem nebo emailem již existuje!")
           return;
         }
+        // Automatické přihlášení uživatele po úspěšném vytvoření účtu
         await this.prihlasitUzivatele();
       }
       catch (error) {
@@ -78,16 +98,22 @@ export default {
         this.isLoading = false;
       }
     },
+
+    // Metoda pro přihlášení uživatele
     async prihlasitUzivatele() {
       if (this.isLoggingIn) return;
       this.isLoggingIn = true;
       this.isLoading = true;
 
+      // Vytvoření uživatelských dat pro přihlášení
       const userData = new Users(this.username, this.email, this.password, this.id);
       try {
+        // Odeslání POST požadavku na server pro přihlášení uživatele
         const response = await axios.post(this.api + '/Users/login', userData);
+        // Nastavení uživatelských údajů podle odpovědi serveru
         this.email = response.data.email;
         this.id = response.data.id;
+        // Pokud bylo úspěšné přihlášení, emitování události pro přihlášení uživatele
         if (this.email) {
           userData.email = this.email;
           userData.id = this.id;

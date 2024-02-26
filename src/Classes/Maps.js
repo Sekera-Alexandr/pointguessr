@@ -1,3 +1,4 @@
+// Třída pro záznam mapy
 export default class Maps {
     constructor(jmeno, imageMapa, imageMisto, poziceX, poziceY, userID) {
         this.jmeno = jmeno
