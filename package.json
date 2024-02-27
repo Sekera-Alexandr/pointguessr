@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "axios": "^1.6.7",
-    "vue": "^3.3.4"
+    "vue": "^3.3.4",
+    "vue-msgbox": "^0.2.14"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.4.0",

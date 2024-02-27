@@ -148,8 +148,8 @@ export default {
       const vzdMax = this.calculateLengthAndMaxSize();
       const vzdalenost = vzdMax[0];
       const maximalniVzdalenost = vzdMax[1];
-      console.log(vzdMax)
-      console.log(vzdalenost/maximalniVzdalenost)
+      console.log(vzdMax);
+      console.log(vzdalenost/maximalniVzdalenost);
 
       const pomer = vzdalenost / maximalniVzdalenost;
 
