@@ -9,17 +9,26 @@
 
     <!-- Tělo obsahu s obrázky a labely -->
     <div class="center">
-      <!-- Label a obrázek pro místo na mapě -->
-      <h2>Místo na mapě {{ jmenoMapy }}</h2>
-      <img id="picturePlaceID" :src="placeImage" />
-
-      <!-- Label a obrázek pro mapu -->
-      <h2>Mapa</h2>
-      <img id="pictureMapID" :src="mapImage" @click="zobrazCervenyBod" />
-
-      <!-- Tlačítko pro potvrzení volby -->
-      <button class="btn confirm-button" @click="confirmChoice">Potvrdit volbu</button>
+      <div class="misto">
+        <!-- Label a obrázek pro místo na mapě -->
+        <h2>Místo na mapě {{ jmenoMapy }}</h2>
+        <img class="misto-obrazek" id="picturePlaceID" :src="placeImage" />
+      </div>
+      <div class="mapa">
+        <!-- Label a obrázek pro mapu -->
+        <h2>Mapa</h2>
+        <div v-if="firstLoad" class="black-bar">
+          <img id="pictureMapID" class="mapa-obrazek" :src="mapImage" @click="zobrazCervenyBod" />
+          <div v-if="zobrazitCervenyBod" id="cervenyBodID" class="cerveny-bod"
+          :style="{ left: bodX + 'px', top: bodY + 'px' }"></div> <!-- Červený bod -->
+          <div v-if="zobrazitModryBod" id="cervenyBodID" class="modry-bod"
+          :style="{ left: bodXShow + 'px', top: bodYShow + 'px' }"></div> <!-- Modry bod -->
+        </div>
+      </div>
     </div>
+
+    <!-- Tlačítko pro potvrzení volby -->
+    <button v-if="firstLoad" class="btn confirm-button" @click="confirmChoice">Potvrdit volbu</button>
   </div>
 </template>
   
@@ -29,7 +38,7 @@ import Maps from '@/Classes/Maps.js';
 import Users from '@/Classes/Users.js';
 
 export default {
-  
+
   // Proměnné
   data() {
     return {
@@ -47,7 +56,8 @@ export default {
       isMapGenerating: false,
       jmenoMapy: '',
       lockSelection: false,
-      zobrazCaru: false
+      zobrazCaru: false,
+      firstLoad: false
     };
   },
   methods: {
@@ -91,17 +101,18 @@ export default {
       //Umožnění znovu generovat mapy
       finally {
         this.isMapGenerating = false;
+        this.firstLoad = true
       }
     },
 
     // Metoda pro potvrzení volby
     confirmChoice() {
       // Ověření, zda nebyl bod již hádán
-      if(this.lockSelection) return;
+      if (this.lockSelection) return;
       this.zobrazitModryBod = true
 
       // Výpočet bodů
-      const points = this.calculatePoints()
+      const points = this.calculatePoints();
       confirm('Gratuluji, získal jsi ' + points + ' bodů!')
       this.lockSelection = true;
     },
@@ -122,7 +133,7 @@ export default {
       const rect = imageElement.getBoundingClientRect();
       const maxSizeSum = Math.pow(rect.height, 2) + Math.pow(rect.width, 2);
       const maxSize = Math.sqrt(maxSizeSum);
-      
+
       return [length, maxSize];
     },
 
@@ -134,8 +145,11 @@ export default {
       const c = 46700 / 1300;
 
       // Metoda obsahuje vzdálenost na 1. pozici a maximální vzdálenost na 2.
-      const vzdalenost = this.calculateLengthAndMaxSize()[0];
-      const maximalniVzdalenost = this.calculateLengthAndMaxSize()[1];
+      const vzdMax = this.calculateLengthAndMaxSize();
+      const vzdalenost = vzdMax[0];
+      const maximalniVzdalenost = vzdMax[1];
+      console.log(vzdMax)
+      console.log(vzdalenost/maximalniVzdalenost)
 
       const pomer = vzdalenost / maximalniVzdalenost;
 
@@ -144,10 +158,18 @@ export default {
       // Menší než 15 %, 1000 bodů
       // Mezi 15 % a 25 %, 800 bodů
       // Mezi 25 % a 50 %, rozdělení bodů podle kvadratické rovnice
-      if(pomer > 0.5) return 0;
-      if(pomer < 0.15) return 1000;
-      if(pomer > 0.15 && pomer < 0.25) return 800;
+      if (pomer > 0.5) return 0;
+      if (pomer < 0.05) return 1000;
+      if (pomer > 0.05 && pomer < 0.15) return 800;
       const points = a * pomer * pomer + b * pomer + c; //y = ax^2 + bx + c
+
+      
+      console.log("vzdálenost: " + vzdalenost)
+      console.log("max vzdálenost: " + maximalniVzdalenost)
+      console.log("poměr: " + pomer)
+      console.log(points)
+
+
       if (points <= 0) return 0;
       return Math.round(points);
     },
@@ -167,6 +189,7 @@ export default {
       this.bodX = Number(event.clientX) - 2;
       this.bodY = Number(event.clientY) + Number(window.scrollY) - 2;
       this.zobrazitCervenyBod = true;
+      console.log(this.zobrazitCervenyBod)
     },
 
     // Metoda pro získání souřadnic obrázku
@@ -184,7 +207,6 @@ export default {
 </script>
 
 <style scoped>
-
 header {
   display: flex;
   justify-content: space-between;
@@ -195,6 +217,20 @@ header {
   color: #fff;
   box-sizing: border-box;
   margin-bottom: 20px;
+}
+
+
+.misto {
+  width: 33%;
+  display: flex;
+  flex-direction: column;
+  margin: 5px;
+}
+
+.mapa {
+  width: 66%;
+  display: flex;
+  flex-direction: column;
 }
 
 .content-container {
@@ -208,8 +244,10 @@ header {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  max-width: 300px; /* Přidáno omezení na maximální šířku obsahu */
-  width: 100%; /* Přidáno pro zajištění, že obsah zabere maximální dostupnou šířku */
+  max-width: 600px;
+  /* Přidáno omezení na maximální šířku obsahu */
+  width: 100%;
+  /* Přidáno pro zajištění, že obsah zabere maximální dostupnou šířku */
   text-align: center;
 }
 
@@ -227,7 +265,8 @@ button:hover {
   background-color: #A6D245;
 }
 
-.cerveny-bod, .modry-bod {
+.cerveny-bod,
+.modry-bod {
   width: 5px;
   height: 5px;
   position: absolute;
@@ -242,9 +281,7 @@ button:hover {
 }
 
 img {
-  max-width: 100%;
   height: auto;
-  margin-bottom: 10px;
 }
 
 label {
@@ -257,14 +294,22 @@ label {
   margin: 20px auto;
 }
 
-img {
-  max-width: 300px;
-  height: auto;
-}
 .center {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
+}
+.mapa-obrazek {
+  max-width: 600px;
+  object-fit: contain;
+  background-color: black;
+}
+.misto-obrazek {
+  max-width: 300px;
+}
+.black-bar {
+  background-color: black;
+  text-align: center;
 }
 </style>
