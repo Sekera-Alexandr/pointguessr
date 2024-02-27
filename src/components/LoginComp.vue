@@ -2,7 +2,7 @@
   <!-- Hlavní div obsahující header a obsah -->
   <div class="main">
     <!-- Checkbox pro přepínání mezi registrací a přihlášením -->
-    <input type="checkbox" id="chk" aria-hidden="true">
+    <input type="checkbox" id="chk" aria-hidden="true" checked>
     <!-- Sekce pro registraci -->
     <div class="signup">
       <form>
@@ -21,12 +21,12 @@
     <div class="login">
       <form>
         <!-- Název formuláře pro přihlášení -->
-        <label for="chk" aria-hidden="true">Login</label>
+        <label for="chk" aria-hidden="true">Sign in</label>
         <!-- Políčka pro zadání uživatelského jména a hesla -->
         <input type="text" v-model="username" name="username" placeholder="User name" required>
         <input type="password" v-model="password" name="password" placeholder="Heslo" required>
         <!-- Tlačítko pro přihlášení uživatele -->
-        <button type="button" @click="prihlasitUzivatele">Login</button>
+        <button type="button" @click="prihlasitUzivatele">Sign in</button>
       </form>
     </div>
   </div>
@@ -251,4 +251,5 @@ button:hover {
 
 .image-container {
   max-width: 300px;
-}</style>
+}
+</style>

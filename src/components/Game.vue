@@ -8,7 +8,7 @@
     </div>
 
     <!-- Tělo obsahu s obrázky a labely -->
-    <div class="center">
+    <div v-if="firstLoad" class="center">
       <div class="misto">
         <!-- Label a obrázek pro místo na mapě -->
         <h2>Místo na mapě {{ jmenoMapy }}</h2>
@@ -17,7 +17,7 @@
       <div class="mapa">
         <!-- Label a obrázek pro mapu -->
         <h2>Mapa</h2>
-        <div v-if="firstLoad" class="black-bar">
+        <div class="black-bar">
           <img id="pictureMapID" class="mapa-obrazek" :src="mapImage" @click="zobrazCervenyBod" />
           <div v-if="zobrazitCervenyBod" id="cervenyBodID" class="cerveny-bod"
           :style="{ left: bodX + 'px', top: bodY + 'px' }"></div> <!-- Červený bod -->
