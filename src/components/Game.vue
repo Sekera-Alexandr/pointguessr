@@ -88,11 +88,9 @@ calculateLine() {
       this.showDialogFlag = true;
     },
     handleConfirm() {
-      console.log("Potvrzeno");
       this.showDialogFlag = false;
     },
     handleCancel() {
-      console.log("Zrušeno");
       this.showDialogFlag = false;
     },
 
@@ -189,8 +187,6 @@ calculateLine() {
       const vzdMax = this.calculateLengthAndMaxSize();
       const vzdalenost = vzdMax[0];
       const maximalniVzdalenost = vzdMax[1];
-      console.log(vzdMax);
-      console.log(vzdalenost/maximalniVzdalenost);
 
       const pomer = vzdalenost / maximalniVzdalenost;
 
@@ -203,13 +199,6 @@ calculateLine() {
       if (pomer < 0.05) return 1000;
       if (pomer > 0.05 && pomer < 0.15) return 800;
       const points = a * pomer * pomer + b * pomer + c; //y = ax^2 + bx + c
-
-      
-      console.log("vzdálenost: " + vzdalenost)
-      console.log("max vzdálenost: " + maximalniVzdalenost)
-      console.log("poměr: " + pomer)
-      console.log(points)
-
 
       if (points <= 0) return 0;
       return Math.round(points);
