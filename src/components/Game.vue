@@ -30,14 +30,24 @@
     <!-- Tlačítko pro potvrzení volby -->
     <button v-if="firstLoad" class="btn confirm-button" @click="confirmChoice">Potvrdit volbu</button>
   </div>
+  <Dialog v-if="showDialogFlag" id="dial" :message="dialogMessage" @confirm="handleConfirm" @cancel="handleCancel"/>
 </template>
   
 <script>
 import axios from 'axios';
 import Maps from '@/Classes/Maps.js';
 import Users from '@/Classes/Users.js';
+import Dialog from '@/components/Dialog.vue'
 
 export default {
+
+  // Emitované události
+  emits: ["goBackGame"],
+
+  // Komponenty
+  components: {
+        Dialog
+    },
 
   // Proměnné
   data() {
@@ -57,10 +67,24 @@ export default {
       jmenoMapy: '',
       lockSelection: false,
       zobrazCaru: false,
-      firstLoad: false
+      firstLoad: false,
+      showDialogFlag: false,
+      dialogMessage: "Toto je zpráva v dialogu"
     };
   },
   methods: {
+
+    showDialog() {
+      this.showDialogFlag = true;
+    },
+    handleConfirm() {
+      console.log("Potvrzeno");
+      this.showDialogFlag = false;
+    },
+    handleCancel() {
+      console.log("Zrušeno");
+      this.showDialogFlag = false;
+    },
 
     // Metoda pro návrat zpět
     goBack() {
@@ -105,15 +129,21 @@ export default {
       }
     },
 
+    prepareDialog(points) {
+      this.showDialogFlag = true;
+      this.dialogMessage = 'Gratuluji, získal jsi ' + points + ' bodů!';
+    },
+
     // Metoda pro potvrzení volby
     confirmChoice() {
       // Ověření, zda nebyl bod již hádán
       if (this.lockSelection) return;
       this.zobrazitModryBod = true
 
-      // Výpočet bodů
+      // Výpočet bodů a zobrazení message boxu
       const points = this.calculatePoints();
-      confirm('Gratuluji, získal jsi ' + points + ' bodů!')
+      this.prepareDialog(points);
+
       this.lockSelection = true;
     },
 

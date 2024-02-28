@@ -75,7 +75,7 @@ export default {
 
   <main>
     <!-- Komponenta pro přihlášení uživatele -->
-    <LoginComp v-if="!result && !insertion" @logged="isLogged($event)" @user="handleUser" />
+    <LoginComp v-if="!result && !insertion" @logged="isLogged($event)" @user="handleUser" id="3"/>
     <!-- Hlavní obrazovka s herním rozhraním -->
     <MainScreen v-if="result && !insertion && !game" @playingGame="isPlayingGame($event)" @inserting="isInserting($event)" @loggingOut="isLoggingOut($event)" :user="user"/>
     <!-- Komponenta pro vložení mapy -->

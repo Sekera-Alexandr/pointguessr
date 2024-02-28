@@ -12,25 +12,44 @@
     <div class="content-container">
       <!-- Obsahový div s formulářem pro vložení mapy -->
       <div class="content" id="parentID">
-        <!-- Název mapy -->
-        <label for="mapName" class="text-red-100">Název mapy: </label>
-        <input v-model="mapName" type="text" id="mapName" required>
+        <div class="nazev-mapy">
+          <!-- Název mapy -->
+          <label for="mapName" class="text-red-100">Název mapy: </label>
+          <input v-model="mapName" type="text" id="mapName" required>
+        </div>
 
         <!-- Input pro obrázek místa -->
-        <label for="placeImage">Obrázek místa:</label>
-        <input type="file" id="placeImage" @change="uploadImage" accept="image/*" required>
-        <img v-show="chosenPlace" id="picturePlaceID" src="#;"/> <!-- Zde se zobrazuje nahraný obrázek místa -->
+        <div>
+          <label for="placeImage">Obrázek místa:</label>
+        </div>
+        <!-- Skrytý input pro obrázek místa -->
+        <input type="file" id="placeImage" @change="uploadImage" accept="image/*" required style="display: none;">
+
+        <!-- Tlačítko pro výběr souboru -->
+        <button id="btnObrazekMista" class="custom-file-upload" @click="selectFile">
+          <i class="fas fa-image"></i> Vyberte obrázek místa
+        </button>
+        <img v-show="chosenPlace" id="picturePlaceID" src="#;" /> <!-- Zde se zobrazuje nahraný obrázek místa -->
         <p />
 
         <!-- Input pro obrázek mapy -->
-        <label v-if="chosenPlace" for="mapImage">Obrázek mapy:</label>
-        <input v-if="chosenPlace" type="file" id="mapImage" @change="uploadImage" accept="image/*" required>
-        <img v-show="chosenPlace && chosenMap" id="pictureMapID" src="#;" @click="zobrazCervenyBod"/> <!-- Zde se zobrazuje nahraný obrázek mapy -->
+        <div>
+          <label v-if="chosenPlace" for="mapImage">Obrázek mapy:</label>
+        </div>
+        <input v-if="chosenPlace" type="file" id="mapImage" @change="uploadImage" accept="image/*" required style="display: none;">
+        <!-- Tlačítko pro výběr souboru -->
+        <button v-if="chosenPlace" id="btnObrazekMapy" class="custom-file-upload" @click="selectFile">
+          <i class="fas fa-image"></i> Vyberte obrázek mapy
+        </button>
+        <img v-show="chosenPlace && chosenMap" id="pictureMapID" src="#;" @click="zobrazCervenyBod" />
+        <!-- Zde se zobrazuje nahraný obrázek mapy -->
         <div v-if="zobrazitCervenyBod && chosenMap" id="cervenyBodID" class="cerveny-bod"
           :style="{ left: bodXShow + 'px', top: bodYShow + 'px' }"></div> <!-- Červený bod -->
         <p />
 
-        <label v-if="zobrazitCervenyBod" for="selectedArea">Oblast byla označena!</label>
+        <div>
+          <label v-if="zobrazitCervenyBod" for="selectedArea">Oblast byla označena!</label>
+        </div>
 
         <!-- Tlačítko pro resetování označení -->
         <button @click="resetSelection" class="btn">Resetovat označení</button>
@@ -83,6 +102,14 @@ export default {
   },
 
   methods: {
+
+    // Přenesení povinností tlačítka na input
+    selectFile(e) {
+      const id = e.target.id;
+      const isPlace = id == "btnObrazekMista";
+      if(isPlace) document.getElementById('placeImage').click();
+      else document.getElementById('mapImage').click();
+    },
 
     // Metoda pro uložení volby
     async ulozitVolbu() {
@@ -180,13 +207,13 @@ export default {
 
     // Zobrazení červeného bodu
     zobrazCervenyBod(event) {
-       // Zobrazení místa, kam jsme skutečně kliknuli
+      // Zobrazení místa, kam jsme skutečně kliknuli
       this.bodXShow = Number(event.clientX) - 2;
       this.bodYShow = Number(event.clientY) + Number(window.scrollY) - 2;
 
       // Výpočet relativní pozice na obrázku, kam jsme kliknuli
       const pozice = this.GetCoordinates(event);
-      
+
       this.bodX = pozice[0];
       this.bodY = pozice[1];
 
@@ -258,6 +285,7 @@ img {
   max-width: 600px;
   height: auto;
 }
+
 .cerveny-bod {
   width: 5px;
   height: 5px;
@@ -289,10 +317,11 @@ header {
 }
 
 .content-container {
-  flex: 1; 
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 
 .content {
@@ -319,6 +348,27 @@ button.btn.primary {
 }
 
 button.btn:hover {
+  background-color: #A6D245;
+}
+
+.nazev-mapy {
+  margin-bottom: 5px;
+}
+
+.custom-file-upload {
+  cursor: pointer;
+  background-color: #90C944;
+  color: #fff;
+  padding: 10px;
+  border-radius: 4px;
+  display: inline-block;
+  text-align: center;
+  border: none;
+  outline: none;
+  margin-bottom: 5px;
+}
+
+.custom-file-upload:hover {
   background-color: #A6D245;
 }
 </style>
