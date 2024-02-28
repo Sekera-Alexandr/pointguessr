@@ -23,6 +23,7 @@
           :style="{ left: bodX + 'px', top: bodY + 'px' }"></div> <!-- Červený bod -->
           <div v-if="zobrazitModryBod" id="cervenyBodID" class="modry-bod"
           :style="{ left: bodXShow + 'px', top: bodYShow + 'px' }"></div> <!-- Modry bod -->
+          <div v-if="zobrazCaru" class="line" :style="{ left: bodX + 'px', top: bodY + 'px', width: lineLength + 'px', transform: 'rotate(' + lineAngle + 'deg)' }"></div> <!-- Čára -->
         </div>
       </div>
     </div>
@@ -73,6 +74,15 @@ export default {
     };
   },
   methods: {
+
+    // Metoda pro určení délky a úhlu čáry
+calculateLine() {
+  const deltaX = this.bodX - this.bodXShow;
+  const deltaY = this.bodY - this.bodYShow;
+  this.lineLength = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+  this.lineAngle = Math.atan2(deltaY, deltaX) * 180 / Math.PI + 180;
+},
+
 
     showDialog() {
       this.showDialogFlag = true;
@@ -139,6 +149,7 @@ export default {
       // Ověření, zda nebyl bod již hádán
       if (this.lockSelection) return;
       this.zobrazitModryBod = true
+      this.zobrazCaru = true
 
       // Výpočet bodů a zobrazení message boxu
       const points = this.calculatePoints();
@@ -208,7 +219,6 @@ export default {
     zobrazCervenyBod(event) {
       // Ověření, zda je volba uzamčena
       if (this.lockSelection) return;
-      this.zobrazCaru = true
 
       // Získání pozice obrázku a následný výpočet umístění bodu na něm
       const poziceObrazku = this.getImageCoordinates();
@@ -219,7 +229,8 @@ export default {
       this.bodX = Number(event.clientX) - 2;
       this.bodY = Number(event.clientY) + Number(window.scrollY) - 2;
       this.zobrazitCervenyBod = true;
-      console.log(this.zobrazitCervenyBod)
+      // Spočítání délky a úhlu čáry
+  this.calculateLine();
     },
 
     // Metoda pro získání souřadnic obrázku
@@ -237,6 +248,14 @@ export default {
 </script>
 
 <style scoped>
+
+.line {
+  position: absolute;
+  height: 2px;
+  background-color: #000;
+  transform-origin: left center;
+}
+
 header {
   display: flex;
   justify-content: space-between;
