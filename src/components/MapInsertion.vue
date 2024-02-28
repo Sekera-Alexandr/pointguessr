@@ -59,15 +59,22 @@
     </div>
   </div>
   <!-- Overlay pro uzamknutí aplikace -->
-  <div v-if="isLoading" class="overlay"></div>
+  <div v-if="isLoading" class="overlay"/>
+  <Dialog v-if="showDialogFlag" id="dial" :message="dialogMessage" @confirm="handleConfirm" @cancel="handleCancel"/>
 </template>
 
 <script>
 import axios from 'axios';
 import Maps from '@/Classes/Maps.js';
 import Users from '@/Classes/Users.js'
+import Dialog from '@/components/Dialog.vue'
 
 export default {
+
+  // Komponenty
+  components: {
+        Dialog
+    },
 
   // Emitované události
   emits: ["goBack"],
@@ -97,11 +104,28 @@ export default {
       neovX: 0,
       neovY: 0,
       zaznamMapy: null,
-      isLoading: false
+      isLoading: false,
+      showDialogFlag: false,
+      dialogMessage: "Toto je zpráva v dialogu"
     };
   },
 
   methods: {
+
+    prepareDialog(text) {
+      this.showDialogFlag = true;
+      this.dialogMessage = text;
+    },
+
+    showDialog() {
+      this.showDialogFlag = true;
+    },
+    handleConfirm() {
+      this.showDialogFlag = false;
+    },
+    handleCancel() {
+      this.showDialogFlag = false;
+    },
 
     // Přenesení povinností tlačítka na input
     selectFile(e) {
@@ -120,7 +144,7 @@ export default {
       try {
         // Odeslání dat na server
         const response = await axios.post(this.api + '/Users/maps', this.zaznamMapy);
-        confirm("Mapa " + this.mapName + " byla úspěšně vložena!")
+        this.prepareDialog("Mapa " + this.mapName + " byla úspěšně vložena!")
       }
       catch (error) {
         console.error('Chyba při vytváření mapy:', error);
@@ -145,7 +169,7 @@ export default {
 
       // Ověření, zda uživatel zadal název mapy
       if (!this.mapName) {
-        confirm("Musíte zadat název mapy!")
+        this.prepareDialog("Musíte zadat název mapy!")
         return;
       }
 
